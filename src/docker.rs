@@ -2,28 +2,36 @@ use crate::action::Action;
 use std::path::Path;
 use std::process::Command;
 
-const ALWAYS_STACKS: &[&str] = &["traefik"];
-
-pub fn execute_stack(action: &Action, homelab: &str, stacks: &[String], target_stack: Option<&String>) {
+pub fn execute_stack(
+    action: &Action,
+    homelab: &str,
+    stacks: &[String],
+    target_stack: Option<&String>,
+    keep_stacks: &[String],
+) {
     match action {
+        Action::Kill => {
+            for s in stacks {
+                run_docker(homelab, s, "down");
+            }
+        }
+
         Action::Keep => {
-            let exclude = match target_stack {
-                Some(s) => {
-                    let mut all = ALWAYS_STACKS.to_vec();
-                    all.push(s.as_str());
-                    all
-                }
-                None => ALWAYS_STACKS.to_vec(),
-            };
+            let mut exclude: Vec<&str> = keep_stacks.iter().map(|s| s.as_str()).collect();
+
+            if let Some(s) = target_stack {
+                exclude.push(s.as_str());
+            }
 
             for s in stacks {
                 if !exclude.contains(&s.as_str()) {
                     run_docker(homelab, s, "down");
                 } else {
-                    println!("Stack '{}' is always active and will not be stopped.", s);
+                    println!("Stack '{}' será mantido ativo.", s);
                 }
             }
         }
+
         _ => {
             let targets: Vec<&String> = match target_stack {
                 Some(s) => vec![s],
@@ -37,6 +45,7 @@ pub fn execute_stack(action: &Action, homelab: &str, stacks: &[String], target_s
                     Action::Logs => "logs -f",
                     Action::Restart => "restart",
                     Action::Status => "ps",
+                    Action::RemoveOrphaned => "down --remove-orphans",
                     _ => "",
                 };
                 run_docker(homelab, stack, cmd);
@@ -46,9 +55,9 @@ pub fn execute_stack(action: &Action, homelab: &str, stacks: &[String], target_s
 }
 
 fn run_docker(homelab: &str, stack: &str, args: &str) {
-    println!("Executing '{}' on stack '{}'...", args, stack);
+    println!("Executando '{}' no stack '{}'...", args, stack);
     let path = Path::new(homelab).join(stack);
-    println!("Stack path: {:?}", path);
+    println!("Caminho do stack: {:?}", path);
 
     let docker_args: Vec<&str> = args.split_whitespace().collect();
 
@@ -58,7 +67,7 @@ fn run_docker(homelab: &str, stack: &str, args: &str) {
         .current_dir(&path)
         .status();
 
-    if !status.expect("Failed to execute command").success() {
-        eprintln!("Failed to execute command on stack '{}'", stack);
+    if !status.expect("Error executing command").success() {
+        eprintln!("Error executing command on stack '{}'", stack);
     }
 }

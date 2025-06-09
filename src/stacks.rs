@@ -1,5 +1,4 @@
 use std::fs;
-use std::path::Path;
 
 pub fn get_stacks(homelab_path: &str) -> Vec<String> {
     fs::read_dir(homelab_path)

@@ -1,0 +1,6 @@
+# Example file
+
+# Path
+path = "/home/user/homelab"
+# keep_stacks
+keep_stacks = ["traefik", "portainer"]
