@@ -3,20 +3,6 @@
 `homelabctl` is a lightweight CLI tool for managing Docker Compose stacks in your homelab.
 It simplifies starting, stopping, monitoring, and maintaining multiple service stacks with just a few commands.
 
-
-## Table of Contents
-
-- [Features](#-features)
-- [Usage](#-usage)
-- [Example](#-example)
-- [Installation](#-installation)
-- [Actions](#-actions)
-- [Configuration](#️-configuration)
-- [CLI Options](#-cli-options)
-- [Requirements](#-requirements)
-
----
-
 ## Features
 
 * 🔼 `up` – Start stacks
