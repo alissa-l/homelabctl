@@ -8,6 +8,8 @@ pub fn execute_stack(
     stacks: &[String],
     target_stack: Option<&String>,
     keep_stacks: &[String],
+    up_ignore: &[String],
+    up_only: &[String],
 ) {
     match action {
         Action::Kill => {
@@ -27,8 +29,28 @@ pub fn execute_stack(
                 if !exclude.contains(&s.as_str()) {
                     run_docker(homelab, s, "down");
                 } else {
-                    println!("Stack '{}' será mantido ativo.", s);
+                    println!("Stack '{}' will be kept active.", s);
                 }
+            }
+        }
+
+        Action::Up => {
+            let targets: Vec<&String> = if let Some(s) = target_stack {
+                vec![s]
+            } else if !up_only.is_empty() {
+                stacks
+                    .iter()
+                    .filter(|s| up_only.contains(s))
+                    .collect()
+            } else {
+                stacks
+                    .iter()
+                    .filter(|s| !up_ignore.contains(s))
+                    .collect()
+            };
+
+            for stack in targets {
+                run_docker(homelab, stack, "up -d");
             }
         }
 
@@ -40,7 +62,6 @@ pub fn execute_stack(
 
             for stack in targets {
                 let cmd = match action {
-                    Action::Up => "up -d",
                     Action::Down => "down",
                     Action::Logs => "logs -f",
                     Action::Restart => "restart",
@@ -55,9 +76,7 @@ pub fn execute_stack(
 }
 
 fn run_docker(homelab: &str, stack: &str, args: &str) {
-    println!("Executando '{}' no stack '{}'...", args, stack);
     let path = Path::new(homelab).join(stack);
-    println!("Caminho do stack: {:?}", path);
 
     let docker_args: Vec<&str> = args.split_whitespace().collect();
 

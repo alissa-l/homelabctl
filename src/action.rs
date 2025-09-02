@@ -19,6 +19,7 @@ pub enum Action {
     Kill,
     #[clap(help = "Removes orphaned containers")]
     RemoveOrphaned,
+    UpIgnore,
 }
 
 impl fmt::Display for Action {
@@ -32,6 +33,7 @@ impl fmt::Display for Action {
             Action::Keep => "keep",
             Action::Kill => "kill",
             Action::RemoveOrphaned => "remove-orphaned",
+            Action::UpIgnore => "up-ignore",
         };
         write!(f, "{}", s)
     }

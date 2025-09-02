@@ -37,16 +37,28 @@ let homelab_path = cli
         _ => Vec::new(),
     };
 
+    let up_ignore: Vec<String> = match (&cli.up_ignore, &config) {
+        (Some(cli_ui), _) => cli_ui.clone(),
+        (None, Some(cfg)) => cfg.up_ignore.clone().unwrap_or_default(),
+        _ => Vec::new(),
+    };
+
+    let up_only: Vec<String> = match (&cli.up_only, &config) {
+        (Some(cli_uo), _) => cli_uo.clone(),
+        (None, Some(cfg)) => cfg.up_only.clone().unwrap_or_default(),
+        _ => Vec::new(),
+    };
+
     match &cli.stack {
         Some(stack) => {
             if !stacks.contains(stack) && cli.action != Action::Keep {
                 eprintln!("Stack '{}' not found!", stack);
                 std::process::exit(1);
             }
-            execute_stack(&cli.action, &homelab_path, &stacks, Some(stack), &keep_stacks);
+            execute_stack(&cli.action, &homelab_path, &stacks, Some(stack), &keep_stacks, &up_ignore, &up_only);
         }
         None => {
-            execute_stack(&cli.action, &homelab_path, &stacks, None, &keep_stacks);
+            execute_stack(&cli.action, &homelab_path, &stacks, None, &keep_stacks, &up_ignore, &up_only);
         }
     }
 

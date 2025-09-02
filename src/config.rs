@@ -6,7 +6,8 @@ use dirs::home_dir;
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub keep_stacks: Option<Vec<String>>,
-    pub path: Option<String>,
+    pub up_ignore: Option<Vec<String>>,
+    pub up_only: Option<Vec<String>>,
 }
 
 pub fn load_config() -> Option<Config> {

@@ -6,7 +6,6 @@ use crate::action::Action;
 #[command(about = "Manages docker compose stacks", long_about = None)]
 #[command(long_about = "A command-line tool to manage Docker Compose stacks in a homelab environment.")]
 #[command(version = "0.01")]
-#[command(author = "Alissa Araujo")]
 pub struct Cli {
     // The action to perform on the stack
     #[arg(short, long, help = "Action to perform on the stack")]
@@ -30,11 +29,22 @@ pub struct Cli {
     pub path: Option<String>,
 
     // Verbose
-    #[arg(short, long)]
+    #[arg(short, long, help = "Enable verbose output")]
     pub verbose: bool,
 
     // Keep stacks
     #[arg(long, help = "Keep specified stacks running")]
     #[arg(short = 'k', long = "keep-stacks", value_delimiter = ',')]
     pub keep_stacks: Option<Vec<String>>,
+
+
+    // Up ignore
+    #[arg(long, help = "Ignore specified stacks when bringing up")]
+    #[arg(short = 'i', long = "up-ignore", value_delimiter = ',')]
+    pub up_ignore: Option<Vec<String>>,
+
+    // Up only
+    #[arg(long, help = "Only bring up specified stacks")]
+    #[arg(short = 'o', long = "up-only", value_delimiter = ',')]
+    pub up_only: Option<Vec<String>>,
 }

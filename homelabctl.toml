@@ -4,3 +4,5 @@
 path = "/home/user/homelab"
 # keep_stacks
 keep_stacks = ["traefik", "portainer"]
+# ignore
+up_ignore = [""]
